@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MoneroPay.API.Models.Monero
+namespace MoneroPay.WalletRpc.Models
 {
     public class MoneroRpcRequest<TParameters>
     {

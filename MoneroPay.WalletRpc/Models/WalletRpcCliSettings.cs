@@ -1,25 +1,16 @@
-using System.Collections.Generic;
-using AutoMapper;
+using MoneroPay.SharedUtilities;
 
-namespace MoneroPay.API.Configuration
+namespace MoneroPay.WalletRpc.Models
 {
-    public enum MoneroSslSetting
-    {
-        Enabled,
-        Disabled,
-        Autodetect
-    }
-
     public record WalletRpcCliParameters
     {
-        [CliParameter("--daemon-address")] public string? DaemonAddress { get; set; }
         [CliParameter("--daemon-host")] public string? DaemonHost { get; set; }
         [CliParameter("--proxy")] public string? SocksProxy { get; set; }
         [CliParameter("--trusted-daemon")] public bool? TrustedDaemon { get; set; }
         [CliParameter("--untrusted-daemon")] public bool? UntrustedDaemon { get; set; }
         [CliParameter("--password")] public string? Password { get; set; }
         [CliParameter("--password-file")] public string? PasswordFile { get; set; }
-        [CliParameter("--daemon-port")] public int? DaemonPort { get; set; }
+        [CliParameter("--daemon-port")] public ushort? DaemonPort { get; set; }
         [CliParameter("--daemon-login")] public string? DaemonLogin { get; set; }
         [CliParameter("--daemon-ssl")] public MoneroSslSetting? DaemonSsl { get; set; }
         [CliParameter("--daemon-ssl-private-key")] public string? DaemonSslPrivateKey { get; set; }
@@ -38,7 +29,7 @@ namespace MoneroPay.API.Configuration
         [CliParameter("--no-dns")] public bool? NoDns { get; set; }
         [CliParameter("--offline")] public bool? Offline { get; set; }
         [CliParameter("--extra-entropy")] public string? ExtraEntropy { get; set; }
-        [CliParameter("--rpc-bind-port")] public int? RpcBindPort { get; set; }
+        [CliParameter("--rpc-bind-port")] public ushort? RpcBindPort { get; set; }
         [CliParameter("--disable-rpc-login")] public bool? DisableRpcLogin { get; set; }
         [CliParameter("--restrict-rpc")] public bool? RestrictedRpc { get; set; }
         [CliParameter("--rpc-bind-ip")] public string? RpcBindIp { get; set; }
@@ -64,13 +55,5 @@ namespace MoneroPay.API.Configuration
         [CliParameter("--log-file")] public string? LogFile { get; set; }
         [CliParameter("--max-concurrency")] public int? MaxConcurrency { get; set; }
         [CliParameter("--config-file")] public string? ConfigFile { get; set; }
-    }
-
-    public class WalletRpcCliParametersMappingProfile : Profile
-    {
-        public WalletRpcCliParametersMappingProfile()
-        {
-            CreateMap<WalletRpcCliParameters, WalletRpcCliParameters>();
-        }
     }
 }

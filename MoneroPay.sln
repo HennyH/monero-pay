@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.Database", "Moner
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.Tests", "MoneroPay.Tests\MoneroPay.Tests.csproj", "{EFD8881E-2CF3-43FD-887D-5A7A0DF27550}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.WalletRpc", "MoneroPay.WalletRpc\MoneroPay.WalletRpc.csproj", "{0174164D-8A36-492D-9D46-ED44F1A1E4F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.SharedUtilities", "MoneroPay.SharedUtilities\MoneroPay.SharedUtilities.csproj", "{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +62,29 @@ Global
 		{EFD8881E-2CF3-43FD-887D-5A7A0DF27550}.Release|x64.Build.0 = Release|Any CPU
 		{EFD8881E-2CF3-43FD-887D-5A7A0DF27550}.Release|x86.ActiveCfg = Release|Any CPU
 		{EFD8881E-2CF3-43FD-887D-5A7A0DF27550}.Release|x86.Build.0 = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|x64.Build.0 = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Debug|x86.Build.0 = Debug|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|x64.ActiveCfg = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|x64.Build.0 = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|x86.ActiveCfg = Release|Any CPU
+		{0174164D-8A36-492D-9D46-ED44F1A1E4F8}.Release|x86.Build.0 = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Debug|x86.Build.0 = Debug|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x64.Build.0 = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x86.ActiveCfg = Release|Any CPU
+		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

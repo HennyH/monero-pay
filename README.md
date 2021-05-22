@@ -1,43 +1,23 @@
-1. I want to manage multiple wallets as part of an 'account'
-2. I want to open a wallet and have it spwan it's own RPC
-
-POST /wallet/{id}/rpc { ... } => json
-    200 - The API did not error
-    404 - No such wallet file
-    400 - RPC error
-    503 - Maximum pool number has been reached
-    503 - Monero wallet RPC could not be spaned / daemon not available
-
-POST /wallet/{id}/open { password, ...params } => url | error
-    200 - The wallet has already spawned an RPC, returns same URL
-    201 - A new RPC was spwaned, returns url
-    404 - No such wallet file
-    503 - Maximum pool number has been reached
-    503 - Monero wallet RPC could not be spaned / daemon not available
-
-PUT /wallet/{id}/close
-    404 - No such wallet file
-    200 - Wallet was closed down or was already closed
-
-
-
-POST /wallet/{id}/payment-url ?note ?amount ?qr { password, callback_url } => url | qr | error
-    404 - No such wallet file
-    429 - Too many requests made
-    503 - A pool could not be spanwed
-    503 - Monero wallet RPC could not be spaned / daemon not available
-    201 - New payment url was created and returns either url or qr
-
-POST /account/{id}
-
-
-```csharp
-
-
-
-using (var wallet = Monero.OpenWallet("name"))
-{
-    wallet.Open
-}
-
+```
+Account (id, password)
+  \_* Wallet (id, cache, keys)
+      |\_* Transfer (id, payment_id?, type, amount, free, date)
+       \__|__* IntegratedAddress (id, payment_id, reference, qr, url, on_transfer_url)
+          |     \_ ReistributionScheme (id, status, type, payout_threshold?)
+          |        |\_ DynamicRedistributionScheme (get_recipients_url, on_redistributed_url)
+          |        |\_ StaticRedistributionScheme
+          |        |   \_* StaticRedistribtionSchemeShare (address, percentage)                   
+          \________|\_* Redistribution (id)
+                     
+POST /accounts { password }                                                                                                          -> id
+GET  /accounts/{id} { password }                                                                                                     -> OK     
+POST /accounts/{id}/sync { password }                                                                                                -> id
+GET  /accounts/{id}/wallets { password }                                                                                             -> { id, cache, keys }[]
+GET  /accounts/{id}/wallets/{id} { password }                                                                                        -> { id, cache, keys }[]
+POST /accounts/{id}/wallets/{id}/sync { password }                                                                                   -> OK
+POST /accounts/{id}/wallets { password, cache, keys}                                                                                 -> id
+POST /accounts/{id}/integrated_addresses  { account_password, on_transfer_url, reference, message, amount? }                         -> id
+PUT  /accounts/{id}/integrated_addresses/{id}/redistribution_scheme { account_password, get_destinations_url, on_redistributed_url } -> OK
+GET  /accounts/{id}/integrated_addresses/{id}/qr                                                                                     -> OK                                        
+GET  /accounts/{id}/integrated_addresses/{id}/url    
 ```

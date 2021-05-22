@@ -1,37 +1,24 @@
-using System;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using MoneroPay.API.Configuration;
-using MoneroPay.API.Models.Monero;
-using MoneroPay.API.WalletRpc;
+using MoneroPay.WalletRpc;
+using MoneroPay.WalletRpc.Models;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace MoneroPay.Tests
 {
-    public class UnitTest1
+    public class UnitTest1 : ApiTestFixture
     {
-        private readonly ITestOutputHelper output;
+        public UnitTest1(ITestOutputHelper outputHelper, ApiWebApplicationFactory factory) : base(outputHelper, factory)
+        { }
 
-        public UnitTest1(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
-        
         [Fact]
         public async Task Test1()
         {
-            var services = new ServiceCollection()
-                .AddLogging(x => x.AddConsole())
-                .AddAutoMapper(typeof(MoneroPay.API.Startup))
-                .AddHttpClient()
-                .AddSingleton<WalletRpcClientFactory>();
-            var serviceProvider = services.BuildServiceProvider();
-            await using (var rpcClientFactory = serviceProvider.GetRequiredService<WalletRpcClientFactory>())
-            {
-                var client = await rpcClientFactory.CreateClientAsync(new WalletRpcCliParameters
+            var rpcClientFactory = GetRequiredService<IWalletRpcProcessClientFactory>();
+            var client = await rpcClientFactory.CreateClientAsync(
+                moneroWalletRpcPath: @"C:\Program Files\Monero GUI Wallet\monero-wallet-rpc.exe",
+                cliParameters: new WalletRpcCliParameters
                 {
                     WalletFile = @"C:\ProgramData\bitmonero\wallets\artistwallet",
                     RpcLogin = "user:pass",
@@ -40,18 +27,19 @@ namespace MoneroPay.Tests
                     Testnet = true,
                     Password = "",
                     LogLevel = 2
-                });
-                await Task.Delay(1000);
-                try
-                {
-                    var x = await client.JsonRpcAsync<GetAddressRpcParameters, GetAddressRpcResult>("get_address", new GetAddressRpcParameters(0));
-                    output.WriteLine(JsonSerializer.Serialize(x));
-                }
-                catch {}
-                foreach (var entry in client.ErrorLogs)
-                {
-                    output.WriteLine(entry);
-                }
+                },
+                portRangeLower: 28090,
+                portRangeUpper: 28099);
+            await Task.Delay(1000);
+            try
+            {
+                var x = await client.JsonRpcAsync<GetAddressRpcParameters, GetAddressRpcResult>("get_address", new GetAddressRpcParameters(0));
+                _output.WriteLine(JsonSerializer.Serialize(x));
+            }
+            catch {}
+            foreach (var entry in client.ErrorLogs)
+            {
+                _output.WriteLine(entry);
             }
         }
     }

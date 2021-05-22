@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace MoneroPay.API.Configuration
+namespace MoneroPay.SharedUtilities
 {
     [System.AttributeUsage(System.AttributeTargets.Property | System.AttributeTargets.Field, Inherited = true, AllowMultiple = false)]
     public sealed class CliParameterAttribute : System.Attribute
@@ -27,8 +27,8 @@ namespace MoneroPay.API.Configuration
     {
         public static string[] FormatCliParameter(CliParameterAttribute parameter, object? value)
         {
-            if (value == null) return new string[0];
-            if (value is bool boolValue) return boolValue ? new string[] { parameter.Name } : new string[0];
+            if (value == null) return Array.Empty<string>();
+            if (value is bool boolValue) return boolValue ? new string[] { parameter.Name } : Array.Empty<string>();
             return new string[] { parameter.Name, value.ToString() ?? string.Empty };
         }
 

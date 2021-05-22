@@ -1,21 +1,16 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using MoneroPay.API.Models.Monero;
+using MoneroPay.WalletRpc.Models;
 
-namespace MoneroPay.API.WalletRpc
+namespace MoneroPay.WalletRpc
 {
     public interface IWalletRpcClient
     {
         public string JsonRpcUri { get; }
-        public IEnumerable<string> InformationLogs { get; }
-        public IEnumerable<string> WarningLogs { get; }
-        public IEnumerable<string> DebugLogs { get; }
-        public IEnumerable<string> ErrorLogs { get; }
-        public Task<string> JsonRpcAsTextAsync(
+        public Task<string> JsonRpcAsync<TParameters>(
                 string method,
-                object parameters,
+                TParameters parameters,
                 string? id = default,
                 CancellationToken cancellationToken = default);
         public Task<IMoneroRpcResponse<TResult>?> JsonRpcAsync<TParameters, TResult>(

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MoneroPay.API.Extensions
+namespace MoneroPay.SharedUtilities
 {
     public static class CollectionExtensions
     {

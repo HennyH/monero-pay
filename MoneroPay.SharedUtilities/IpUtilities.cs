@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using System.Net.NetworkInformation;
 
-namespace MoneroPay.API.Utilities
+namespace MoneroPay.SharedUtilities
 {
     public static class IpUtilities
     {
         private const ushort MIN_PORT = 1;
         private const ushort MAX_PORT = UInt16.MaxValue;
-        public static int? GetAvailablePort(ushort lowerPort = MIN_PORT, ushort upperPort = MAX_PORT)
+        public static ushort? GetAvailablePort(ushort lowerPort = MIN_PORT, ushort upperPort = MAX_PORT)
         {
             var ipProperties = IPGlobalProperties.GetIPGlobalProperties();
             var usedPorts = Enumerable.Empty<int>()
@@ -16,7 +16,7 @@ namespace MoneroPay.API.Utilities
                 .Concat(ipProperties.GetActiveTcpListeners().Select(l => l.Port))
                 .Concat(ipProperties.GetActiveUdpListeners().Select(l => l.Port))
                 .ToHashSet();
-            for (int port = lowerPort; port <= upperPort; port++)
+            for (ushort port = lowerPort; port <= upperPort; port++)
             {
                 if (!usedPorts.Contains(port)) return port;
             }

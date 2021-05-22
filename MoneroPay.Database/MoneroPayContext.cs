@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MoneroPay.Database.Entities;
 
 namespace MoneroPay.Database
 {
@@ -8,8 +7,6 @@ namespace MoneroPay.Database
     {
         public MoneroPayContext(DbContextOptions<MoneroPayContext> options) : base(options)
         { }
-
-        public DbSet<MoneroWalletRpcContainer> MoneroWalletRpcContainers { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
             .UseNpgsql("name=ConnectionStrings:MoneroPayContext")

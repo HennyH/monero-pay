@@ -5,8 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using MoneroPay.API.WalletRpc;
+using MoneroPay.API.Configuration;
 using MoneroPay.Database;
+using MoneroPay.WalletRpc;
 
 namespace MoneroPay.API
 {
@@ -33,7 +34,11 @@ namespace MoneroPay.API
             services.AddDbContext<MoneroPayContext>();
 
             services.AddHttpClient();
-            services.AddSingleton<IWalletRpcClientFactory, WalletRpcClientFactory>();
+            services.AddSingleton<IWalletRpcProcessClientFactory, WalletRpcProcessClientFactory>();
+            services.AddTransient<IMoneroPayConfiguration>(provider => provider
+                .GetRequiredService<IConfiguration>()
+                .GetSection("MoneroPay")
+                .Get<MoneroPayConfiguration>() ?? new MoneroPayConfiguration());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

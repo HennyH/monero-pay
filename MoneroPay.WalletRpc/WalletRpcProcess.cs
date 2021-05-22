@@ -2,22 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.Extensions.Logging;
-using MoneroPay.API.Configuration;
-using MoneroPay.API.Extensions;
-using MoneroPay.API.Utilities;
+using MoneroPay.SharedUtilities;
+using MoneroPay.WalletRpc.Models;
 
-namespace MoneroPay.API.WalletRpc
+namespace MoneroPay.WalletRpc
 {
     public class WalletRpcProcess : IDisposable
     {
-        private readonly ILogger<WalletRpcProcess> _logger;
         private readonly WalletRpcCliParameters _cliParameters;
-        private readonly IMapper _mapper;
+        private readonly string _moneroWalletRpcPath;
+        private readonly ushort _portRangeLower;
+        private readonly ushort _portRangeUpper;
+        private readonly ILogger<WalletRpcProcess> _logger;
         private readonly ICollection<string> _rpcInformationData = new List<string>();
         private readonly ICollection<string> _rpcWarningData = new List<string>();
         private readonly ICollection<string> _rpcDebugData = new List<string>();
@@ -25,7 +24,7 @@ namespace MoneroPay.API.WalletRpc
         private readonly ICollection<string> _rpcStdoutData = new List<string>();
         private readonly ICollection<string> _rpcStderrData = new List<string>();
         private Process? _process;
-        private int? _port;
+        private ushort? _port;
         private bool disposed;
         public IEnumerable<string> InformationData => _rpcInformationData;
         public IEnumerable<string> WarningData => _rpcWarningData;
@@ -33,15 +32,26 @@ namespace MoneroPay.API.WalletRpc
         public IEnumerable<string> ErrorData => _rpcErrorData;
         public IEnumerable<string> StdoutData => _rpcStdoutData;
         public IEnumerable<string> StderrData => _rpcErrorData;
+        public string RpcProtocol => _cliParameters.RpcSsl == MoneroSslSetting.Disabled ? "http" : "https";
+        public string RpcHost => _cliParameters?.RpcBindIp ?? "localhost";
         public int? RpcPort => _port;
-        
-        internal WalletRpcProcess(ILogger<WalletRpcProcess> logger, IMapper mapper, WalletRpcCliParameters cliParameters)
+        public string RpcUri => $"{RpcProtocol}://{RpcHost}{(RpcPort == null ? string.Empty : $":{RpcPort}")}/json_rpc";
+
+        internal WalletRpcProcess(
+                ILogger<WalletRpcProcess> logger,
+                string moneroWalletRpcPath,
+                ushort portRangeLower,
+                ushort portRangeUpper,
+                WalletRpcCliParameters cliParameters)
         {
-            if (cliParameters.WalletFile == null) throw new ArgumentNullException(nameof(cliParameters.WalletFile), "Wallet processes must be launched with a --wallet-file parameter");
-            if (cliParameters.RpcBindPort != null) throw new ArgumentException(nameof(cliParameters.RpcBindPort), "Support for launching a wallet rpc client on a preconfigured port has not been implemented");
+            if (cliParameters.WalletFile == null) throw new ArgumentException("Wallet processes must be launched with a --wallet-file parameter", nameof(cliParameters));
+            if (cliParameters.RpcBindPort != null) throw new ArgumentException("Support for launching a wallet rpc client on a preconfigured port has not been implemented", nameof(cliParameters));
+            if (!File.Exists(moneroWalletRpcPath)) throw new ArgumentException($"The monero wallet rpc program with path {moneroWalletRpcPath} could not be found.", nameof(moneroWalletRpcPath));
             _cliParameters = cliParameters;
             _logger = logger;
-            _mapper = mapper;
+            _moneroWalletRpcPath = moneroWalletRpcPath;
+            _portRangeLower = portRangeLower;
+            _portRangeUpper = portRangeUpper;
         }
 
         public Task<bool> StartAsync()
@@ -52,17 +62,16 @@ namespace MoneroPay.API.WalletRpc
             // we should probably put user/pass/wallet into the CliParamters and only expose a subset to user rather than special casing
             // at this point
 
-            _port = IpUtilities.GetAvailablePort(lowerPort: 28090, upperPort: 28099);
+            _port = _cliParameters.RpcBindPort ?? IpUtilities.GetAvailablePort(lowerPort: _portRangeLower, upperPort: _portRangeUpper);
             if (_port == null) throw new SystemException("There are no free ports available to spwan a monero-wallet-rpc process");
 
-            // TODO(HH): This obv. needs to be parameterized
-            var startInfo = new ProcessStartInfo(@"C:\Program Files\Monero GUI Wallet\monero-wallet-rpc.exe");
+            var startInfo = new ProcessStartInfo(_moneroWalletRpcPath);
             startInfo.ArgumentList.AddRange(CliParameterHelpers.ToArgumentList(_cliParameters with { RpcBindPort = _port }));
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
 
             _process = new Process { StartInfo = startInfo };
-            _process.OutputDataReceived +=  CreateDataRecievedLoggingHandler(LogLevel.Information);
+            _process.OutputDataReceived += CreateDataRecievedLoggingHandler(LogLevel.Information);
             _process.ErrorDataReceived += CreateDataRecievedLoggingHandler(LogLevel.Error);
 
             var startOk = _process.Start();
@@ -91,15 +100,16 @@ namespace MoneroPay.API.WalletRpc
             GC.SuppressFinalize(this);
         }
 
-        private DataReceivedEventHandler CreateDataRecievedLoggingHandler(LogLevel logLevel) => new DataReceivedEventHandler((_, e) =>
+        private DataReceivedEventHandler CreateDataRecievedLoggingHandler(LogLevel logLevel) => new((_, e) =>
         {
             if (string.IsNullOrEmpty(e.Data)) return;
             _logger.Log(logLevel, $"({_cliParameters.WalletFile}) {e.Data}");
             var bytes = Encoding.UTF8.GetBytes(e.Data);
             (logLevel == LogLevel.Error ? _rpcStderrData : _rpcStdoutData).Add(e.Data);
+            GetStreamForLogLevel(TryGetRpcLogLevel(e.Data, logLevel))?.Add(e.Data);
         });
 
-        private LogLevel TryGetRpcLogLevel(string rpcMessage, LogLevel @default)
+        private static LogLevel TryGetRpcLogLevel(string rpcMessage, LogLevel @default)
         {
             // monero log messages are in the following format:
             // "2021-05-15 12:57:25.639\t<I|D|E|...> <message>"

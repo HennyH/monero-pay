@@ -25,9 +25,9 @@ namespace MoneroPay.API.Models
         [JsonPropertyName("testnet")]
         public bool Testnet { get; set; } = false;
         [JsonPropertyName("daemon_host")]
-        public string DaemonHost { get; set; } = "localhost";
+        public string? DaemonHost { get; set; } = "localhost";
         [JsonPropertyName("daemon_port")]
-        public ushort DaemonPort { get; set; } = 28081;
+        public ushort? DaemonPort { get; set; } = 28081;
         [JsonPropertyName("rpc_username")]
         public string RpcUsername {get;set;} = "user";
         [JsonPropertyName("rpc_password")]

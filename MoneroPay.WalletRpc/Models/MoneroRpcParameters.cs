@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MoneroPay.API.Models.Monero
+namespace MoneroPay.WalletRpc.Models
 {
     public class GetAddressRpcParameters
     {
@@ -16,4 +16,7 @@ namespace MoneroPay.API.Models.Monero
         [JsonPropertyName("address_index")]
         public ulong[]? AddressIndex { get; set; }
     }
+
+    public class StoreParameters
+    { }
 }

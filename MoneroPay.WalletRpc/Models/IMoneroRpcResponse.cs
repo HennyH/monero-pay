@@ -1,4 +1,4 @@
-namespace MoneroPay.API.Models.Monero
+namespace MoneroPay.WalletRpc.Models
 {
     public interface IMoneroRpcResponse<TResult>
         where TResult : class

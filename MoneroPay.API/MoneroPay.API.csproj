@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MoneroPay.Database\MoneroPay.Database.csproj" />
+    <ProjectReference Include="..\MoneroPay.WalletRpc\MoneroPay.WalletRpc.csproj" />
   </ItemGroup>
 
 </Project>
