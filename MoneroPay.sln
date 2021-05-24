@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.WalletRpc", "Mone
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.SharedUtilities", "MoneroPay.SharedUtilities\MoneroPay.SharedUtilities.csproj", "{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoneroPay.WalletRpcGenerator", "MoneroPay.WalletRpcGenerator\MoneroPay.WalletRpcGenerator.csproj", "{86246CA6-CC5C-4DB9-960D-00091B1AD981}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,5 +88,17 @@ Global
 		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x64.Build.0 = Release|Any CPU
 		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x86.ActiveCfg = Release|Any CPU
 		{E1FB0325-106C-4D24-8F8F-5D77834C4AC1}.Release|x86.Build.0 = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|x64.Build.0 = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Debug|x86.Build.0 = Debug|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|x64.ActiveCfg = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|x64.Build.0 = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|x86.ActiveCfg = Release|Any CPU
+		{86246CA6-CC5C-4DB9-960D-00091B1AD981}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

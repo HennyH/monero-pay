@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/MoneroPay.API/MoneroPay.API.csproj",
+                "${workspaceFolder}/MoneroPay.WalletRpcGenerator/MoneroPay.WalletRpcGenerator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/MoneroPay.API/MoneroPay.API.csproj",
+                "${workspaceFolder}/MoneroPay.WalletRpcGenerator/MoneroPay.WalletRpcGenerator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/MoneroPay.API/MoneroPay.API.csproj",
+                "${workspaceFolder}/MoneroPay.WalletRpcGenerator/MoneroPay.WalletRpcGenerator.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
