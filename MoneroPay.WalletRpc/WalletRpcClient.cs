@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -48,8 +46,8 @@ namespace MoneroPay.WalletRpc
 
             _rpcServerReady = new Lazy<Task<bool>>(async () => await IsRpcServerHealthy(TimeSpan.FromMinutes(1)));
         }
-        
-        private async Task<string> JsonRpcAsync<TParameters>(string method, TParameters parameters, string? id = null, bool waitForHealthCheck = true, CancellationToken cancellationToken = default)
+
+        public async Task<HttpResponseMessage> JsonRpcAsync<TParameters>(string method, TParameters parameters, string? id = null, bool waitForHealthCheck = true, CancellationToken cancellationToken = default)
         {
             if (waitForHealthCheck) await _rpcServerReady.Value;
             var request = new MoneroRpcRequest<object>(method: method, parameters: parameters ?? new object(), id: id);
@@ -72,24 +70,22 @@ namespace MoneroPay.WalletRpc
             using var httpClient = new HttpClient(httpClientHandler);
             using var httpResponse = await httpClient.PostAsync(_rpcUri, requestContent, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            return await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+            return httpResponse;
         }
 
         public async Task<IMoneroRpcResponse<TResult>?> JsonRpcAsync<TParameters, TResult>(
                 string method,
                 TParameters parameters,
                 string? id = default,
+                bool waitForHealthCheck = true,
                 CancellationToken cancellationToken = default)
             where TResult : class
             where TParameters : class
         {
-            var responseString = await JsonRpcAsync<object>(method, parameters, id, waitForHealthCheck: true, cancellationToken);
-            return JsonSerializer.Deserialize<MoneroRpcResponse<TResult>>(responseString);
-        }
-
-        public Task<string> JsonRpcAsync<TParameters>(string method, TParameters parameters, string? id = null, CancellationToken cancellationToken = default)
-        {
-            return JsonRpcAsync(method, parameters ?? new object(), id, waitForHealthCheck: true, cancellationToken);
+            var httpResponse = await JsonRpcAsync<object>(method, parameters, id, waitForHealthCheck: waitForHealthCheck, cancellationToken);
+            var result = JsonSerializer.Deserialize<MoneroRpcResponse<TResult>>(await httpResponse.Content.ReadAsStringAsync(cancellationToken));
+            cancellationToken.ThrowIfCancellationRequested();
+            return result;
         }
 
         private async Task<bool> IsRpcServerHealthy(TimeSpan timeout)
@@ -102,7 +98,7 @@ namespace MoneroPay.WalletRpc
                 {
                     await JsonRpcAsync(
                         method: "get_address",
-                        parameters: new GetAddressRpcParameters(0),
+                        parameters: new GetAddressParameters(0, new()),
                         waitForHealthCheck: false
                     );
                     return true;

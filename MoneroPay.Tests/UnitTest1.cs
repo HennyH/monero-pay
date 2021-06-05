@@ -33,7 +33,7 @@ namespace MoneroPay.Tests
             await Task.Delay(1000);
             try
             {
-                var x = await client.JsonRpcAsync<GetAddressRpcParameters, GetAddressRpcResult>("get_address", new GetAddressRpcParameters(0));
+                var x = await client.JsonRpcAsync<GetAddressParameters, GetAddressResult>("get_address", new GetAddressParameters(0, new()));
                 _output.WriteLine(JsonSerializer.Serialize(x));
             }
             catch {}

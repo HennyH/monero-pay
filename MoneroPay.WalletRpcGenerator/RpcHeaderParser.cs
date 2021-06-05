@@ -14,7 +14,7 @@ namespace MoneroPay.WalletRpcGenerator
         public static readonly Regex RPC_RESPONSE_STRUCT_REGEX = new(@"struct response_t(: public (?<inherits>[a-z_]+))?(?:\s*//.*)?$");
         public static readonly Regex STRUCT_REGEX = new(@"struct (?<name>[a-z_]+)(: public (?<inherits>[a-z_]+))?(?:\s*//.*)?$");
         public static readonly Regex KV_SERIALIZE_REQ_REGEX = new(@"KV_SERIALIZE\((?<name>[a-z_]+)\)");
-        public static readonly Regex KV_SERIALIZE_OPT_REGEX = new(@"KV_SERIALIZE_OPT\((?<name>[a-z_]+),\s*(?<value>.*?)\)");
+        public static readonly Regex KV_SERIALIZE_OPT_REGEX = new(@"KV_SERIALIZE_OPT\((?<name>[a-z_]+),\s*(?<value>.*)\)");
         public static readonly Regex KV_SERIALIZE_END_REGEX = new(@"END_KV_SERIALIZE_MAP\(\)");
         public static readonly Regex RPC_STRUCT_END_REGEX = new(@"typedef epee::misc_utils::struct_init<[a-z_]+> [a-z_]+");
         public static readonly Regex TYPEDEF_REGEX = new(@"typedef (?<type>.*)\s(?<name>[a-z_]+);(?:\s*//.*)?$");
@@ -59,14 +59,30 @@ namespace MoneroPay.WalletRpcGenerator
 
                 if (!handled)
                 {
-                    Console.WriteLine($"Skipping line {lineno}: {line}");
+                    Console.Error.WriteLine($"Skipping line {lineno}: {line}");
                 }
+            }
+
+            var conflictingStructures = state.Structures
+                .Where(outerStructure => state.Structures
+                    .Any(innerStructure =>
+                        outerStructure.Name == innerStructure.Name
+                        && !outerStructure.Fields.All(
+                            outerField => innerStructure.Fields.Any(innerField => innerField == outerField))))
+                .ToList();
+            foreach (var conflictingStructure in conflictingStructures)
+            {
+                throw new Exception($"The structure {conflictingStructure.Name} was defined multiple times with conflicting field sets");
+            }
+            if (conflictingStructures.Count > 0)
+            {
+                throw new Exception($"At least one structure was defined multiple times with conflicting field sets");
             }
 
             return new RpcheaderParserResult
             {
                 RpcCommands = state.RpcCommands.ToList(),
-                Structures = state.Structures.ToList(),
+                Structures = state.Structures.GroupBy(s => s.Name).Select(g => g.First()).ToList(),
                 Typedefs = state.Typedefs.ToList()
             };
         }
@@ -75,7 +91,7 @@ namespace MoneroPay.WalletRpcGenerator
         {
             var name = match.Groups["name"].Value;
             Console.Error.WriteLine($"I: Detected command '{name}' on line {lineno}: {line}");
-            state.RpcCommand = new RpcCommand(requestName: $"{name}Parameters", responseName: $"{name}Result");
+            state.RpcCommand = new RpcCommand(requestName: $"{name}_PARAMETERS", responseName: $"{name}_RESULT");
             state.Fieldset = null;
             state.RpcCommands.Add(state.RpcCommand);
             return state;

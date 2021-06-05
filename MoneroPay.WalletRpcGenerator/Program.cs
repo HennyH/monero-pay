@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using LanguageExt;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -26,23 +19,34 @@ namespace MoneroPay.WalletRpcGenerator
             var sourceCode = await sourceCodeResponse.Content.ReadAsStreamAsync();
 
             var result = RpcHeaderParser.ParseHeader(sourceCode);
+            result.Typedefs.Add(new Typedef("subaddress_index", "cryptonote::subaddress_index"));
+            result.Structures.Add(new Structure("subaddress_index")
+            {
+                Fields = new()
+                {
+                    new FieldDefinition("major", "uint32_t") { InKvSerialize = true },
+                    new FieldDefinition("minor", "uint32_t") { InKvSerialize = true }
+                }
+            });           
 
             var @namespace = NamespaceDeclaration(IdentifierName("MoneroPay.WalletRpc.Models"))
                 .AddUsings(
                     UsingDirective(ParseName("System")),
-                    UsingDirective(ParseName("System.Text.Json.Serialization")));
+                    UsingDirective(ParseName("System.Text.Json.Serialization")),
+                    UsingDirective(ParseName("System.Collections.Generic")));
 
-            var fieldTypeTypeSyntaxResolver = ModelGenerator.GetFieldTypeTypeSyntaxResolver(ModelGenerator.NamingConvention.SnakeCase, result.Typedefs, result.Structures);
+            var fieldTypeTypeSyntaxResolver = ModelGenerator.GetFieldTypeTypeSyntaxResolver(result.Typedefs, result.Structures);
+            var defaultEqualsValueClauseResolver = ModelGenerator.GetDefaultEqualsValueCaluseSyntaxResolver();
             foreach (var structure in result.Structures)
             {
                 @namespace = @namespace.AddMembers(
-                    ModelGenerator.CreateClass(ModelGenerator.NamingConvention.SnakeCase, structure.Name, structure.Fields, fieldTypeTypeSyntaxResolver));
+                    ModelGenerator.CreateClass(structure.Name, structure.Fields, fieldTypeTypeSyntaxResolver, defaultEqualsValueClauseResolver));
             }
 
             foreach (var command in result.RpcCommands)
             {
-                @namespace = @namespace.AddMembers(ModelGenerator.CreateClass(ModelGenerator.NamingConvention.SnakeCase,command.RequestStructure.Name, command.RequestStructure.Fields, fieldTypeTypeSyntaxResolver));
-                @namespace = @namespace.AddMembers(ModelGenerator.CreateClass(ModelGenerator.NamingConvention.SnakeCase,command.ResponseStructure.Name, command.ResponseStructure.Fields, fieldTypeTypeSyntaxResolver));
+                @namespace = @namespace.AddMembers(ModelGenerator.CreateClass(command.RequestStructure.Name, command.RequestStructure.Fields, fieldTypeTypeSyntaxResolver, defaultEqualsValueClauseResolver));
+                @namespace = @namespace.AddMembers(ModelGenerator.CreateClass(command.ResponseStructure.Name, command.ResponseStructure.Fields, fieldTypeTypeSyntaxResolver, defaultEqualsValueClauseResolver));
             }
 
             using var workspace = new AdhocWorkspace();
