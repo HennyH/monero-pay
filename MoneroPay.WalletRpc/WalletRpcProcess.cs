@@ -103,10 +103,14 @@ namespace MoneroPay.WalletRpc
         private DataReceivedEventHandler CreateDataRecievedLoggingHandler(LogLevel logLevel) => new((_, e) =>
         {
             if (string.IsNullOrEmpty(e.Data)) return;
-            _logger.Log(logLevel, $"({_cliParameters.WalletFile}) {e.Data}");
-            var bytes = Encoding.UTF8.GetBytes(e.Data);
-            (logLevel == LogLevel.Error ? _rpcStderrData : _rpcStdoutData).Add(e.Data);
-            GetStreamForLogLevel(TryGetRpcLogLevel(e.Data, logLevel))?.Add(e.Data);
+            try
+            {
+                _logger.Log(logLevel, $"({_cliParameters.WalletFile}) {e.Data}");
+                var bytes = Encoding.UTF8.GetBytes(e.Data);
+                (logLevel == LogLevel.Error ? _rpcStderrData : _rpcStdoutData).Add(e.Data);
+                GetStreamForLogLevel(TryGetRpcLogLevel(e.Data, logLevel))?.Add(e.Data);
+            }
+            catch {}
         });
 
         private static LogLevel TryGetRpcLogLevel(string rpcMessage, LogLevel @default)

@@ -15,7 +15,7 @@ namespace MoneroPay.WalletRpc
                 string? id = default,
                 bool waitForHealthCheck = true,
                 CancellationToken cancellationToken = default);
-        public Task<IMoneroRpcResponse<TResult>?> JsonRpcAsync<TParameters, TResult>(
+        public Task<IMoneroRpcResponse<TResult>> JsonRpcAsync<TParameters, TResult>(
                 string method,
                 TParameters parameters,
                 string? id = default,

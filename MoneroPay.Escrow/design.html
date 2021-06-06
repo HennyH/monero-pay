@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneroPay Escrow</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            border: 1px solid black;
+            padding: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1>MoneroPay Escrow</h1>
+    <h2>Data Dictionary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Purpose</th>
+                <th>Visibility</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Seller Public X.509</td>
+                <td>Allows the arbitrator, buyer, and server to validate messages and data from an entity using external means of identity validation.</td>
+                <td>Always(seller, arbitrator, buyer)</td>
+                <td>X.509 Public Key</td>
+            </tr>
+            <tr>
+                <td>Arbitrator Public X.509</td>
+                <td>Allows the seller, buyer, and server to validate messages and data from an entity using external means of identity validation.</td>
+                <td>Always(seller, arbitrator, buyer)</td>
+                <td>X.509 Public Key</td>
+            </tr>
+            <tr>
+                <td>Buyer Public X.509</td>
+                <td>Allows the arbitrator, seller, and server to validate messages and data from an entity using external means of identity validation.</td>
+                <td>Always(seller, arbitrator, buyer)</td>
+                <td>X.509 Public Key</td>
+            </tr>
+            <tr>
+                <td>Amount</td>
+                <td>The amount the seller is expecting the buyer to deposit.</td>
+                <td>
+                    Always(buyer, seller)<br/>
+                    Conditional(arbitrator): Only if buyer or seller raises dispute.
+                </td>
+                <td>Integer</td>
+            </tr>
+            <tr>
+                <td>Arbitrator Contact Details</td>
+                <td>Submitted when the arbitrator joins the escrow.</td>
+                <td>Always(seller, arbitrator, buyer)</td>
+                <td>Email (Req.), Mobile (Opt.), Jami (Opt.), Others (Opt.)</td>
+            </tr>
+            <tr>
+                <td>Buyer Contact Details</td>
+                <td>Submitted and validated when the buyer joins the escrow. This information is requested when a dispute must be resolved.</td>
+                <td>
+                    Always(buyer)<br/>
+                    Conditional(arbitrator, seller): Available if requested and the request is approved by seller.
+                </td>
+                <td>Email (Req.), Mobile (Opt.), Jami (Opt.), Others (Opt.)</td>
+            </tr>
+            <tr>
+                <td>Seller Contact Details</td>
+                <td>Submitted and validated when the seller creates the escrow. This information is requested when a dispute must be resolved.</td>
+                <td>
+                    Always(seller)<br/>
+                    Conditional(others): Available if requested and the request is approved by seller.
+                </td>
+                <td>Email (Req.), Mobile (Opt.), Jami (Opt.), Others (Opt.)</td>
+            </tr>
+            <tr>
+                <td>Escrow Wallet</td>
+                <td>2-of-3 escrow wallet.</td>
+                <td>Always(buyer, seller, arbitrator)</td>
+                <td>Address and private view key.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

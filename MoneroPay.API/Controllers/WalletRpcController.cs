@@ -49,7 +49,7 @@ namespace API.Controllers
                 },
                 portRangeLower: _moneroPayConfiguration.WalletRpcPortStart,
                 portRangeUpper: _moneroPayConfiguration.WalletRpcPortEnd);
-            var rpcResponse = await rpcClient.JsonRpcAsync(walletRpcRequest.Method, walletRpcRequest.Params, walletRpcRequest.Id, cancellationToken);
+            var rpcResponse = await rpcClient.JsonRpcAsync(walletRpcRequest.Method, walletRpcRequest.Params, walletRpcRequest.Id, waitForHealthCheck: true, cancellationToken: cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             return new FileContentResult(Encoding.UTF8.GetBytes(rpcResponse), MediaTypeNames.Application.Json);
         }

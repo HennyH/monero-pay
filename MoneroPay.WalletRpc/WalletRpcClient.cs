@@ -68,12 +68,12 @@ namespace MoneroPay.WalletRpc
                 httpClientHandler.ServerCertificateCustomValidationCallback += (_, _, _, _) => true;
             }
             using var httpClient = new HttpClient(httpClientHandler);
-            using var httpResponse = await httpClient.PostAsync(_rpcUri, requestContent, cancellationToken);
+            var httpResponse = await httpClient.PostAsync(_rpcUri, requestContent, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             return httpResponse;
         }
 
-        public async Task<IMoneroRpcResponse<TResult>?> JsonRpcAsync<TParameters, TResult>(
+        public async Task<IMoneroRpcResponse<TResult>> JsonRpcAsync<TParameters, TResult>(
                 string method,
                 TParameters parameters,
                 string? id = default,
@@ -82,9 +82,10 @@ namespace MoneroPay.WalletRpc
             where TResult : class
             where TParameters : class
         {
-            var httpResponse = await JsonRpcAsync<object>(method, parameters, id, waitForHealthCheck: waitForHealthCheck, cancellationToken);
+            using var httpResponse = await JsonRpcAsync<object>(method, parameters, id, waitForHealthCheck: waitForHealthCheck, cancellationToken);
             var result = JsonSerializer.Deserialize<MoneroRpcResponse<TResult>>(await httpResponse.Content.ReadAsStringAsync(cancellationToken));
             cancellationToken.ThrowIfCancellationRequested();
+            if (result == null) throw new JsonException($"Failed to deserialize monero RPC response to a {nameof(MoneroRpcResponse<TResult>)}");
             return result;
         }
 

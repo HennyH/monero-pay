@@ -34,6 +34,7 @@ namespace MoneroPay.Tests
             try
             {
                 var x = await client.JsonRpcAsync<GetAddressParameters, GetAddressResult>("get_address", new GetAddressParameters(0, new()));
+                Assert.Null(x.Error);
                 _output.WriteLine(JsonSerializer.Serialize(x));
             }
             catch {}
