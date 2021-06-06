@@ -72,7 +72,7 @@ namespace MoneroPay.WalletRpcGenerator
                 .ToList();
             foreach (var conflictingStructure in conflictingStructures)
             {
-                throw new Exception($"The structure {conflictingStructure.Name} was defined multiple times with conflicting field sets");
+                Console.Error.WriteLine($"The structure {conflictingStructure.Name} was defined multiple times with conflicting field sets");
             }
             if (conflictingStructures.Count > 0)
             {
